@@ -64,7 +64,7 @@
                 <!-- Puan ve kişi sayısı satırları buraya eklenecek -->
             </tbody>
         </table>
-        <h2 id="ortalamaPuan">Ortalama Puan: 0</h2>
+        <h2 id="ortalamaPuan">Ortalama Puan: 0 (0 kişi)</h2>
         <canvas id="puanGrafik"></canvas>
         <div class="suggestions">
             <h3>Öneriler</h3>
@@ -76,133 +76,132 @@
     <script>
     let chartInstance = null;
     document.addEventListener("DOMContentLoaded", function() {
-    const tbody = document.getElementById('puanTablosu').getElementsByTagName('tbody')[0];
-    
-    for (let puan = 1; puan <= 10; puan++) {
-        const tr = document.createElement('tr');
-        const tdPuan = document.createElement('td');
-        const tdKisiSayisi = document.createElement('td');
-        const inputKisiSayisi = document.createElement('input');
+        const tbody = document.getElementById('puanTablosu').getElementsByTagName('tbody')[0];
         
-        inputKisiSayisi.type = 'number';
-        inputKisiSayisi.min = 0;
-        inputKisiSayisi.value = 0;
-        inputKisiSayisi.addEventListener('input', ortalamaHesapla);
-        
-        tdPuan.textContent = puan;
-        tdKisiSayisi.appendChild(inputKisiSayisi);
-        
-        tr.appendChild(tdPuan);
-        tr.appendChild(tdKisiSayisi);
-        tbody.appendChild(tr);
-    }
-
-    document.getElementById('hedefOrtalama').addEventListener('input', hedefOrtalamaHesapla);
-});
-
-function ortalamaHesapla() {
-    const rows = document.getElementById('puanTablosu').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-    let toplamPuan = 0;
-    let toplamKisi = 0;
-    const puanlar = [];
-    const kisiSayilari = [];
-    
-    for (let row of rows) {
-        const puan = parseInt(row.getElementsByTagName('td')[0].textContent);
-        const kisiSayisi = parseInt(row.getElementsByTagName('input')[0].value);
-        
-        toplamPuan += puan * kisiSayisi;
-        toplamKisi += kisiSayisi;
-        puanlar.push(puan);
-        kisiSayilari.push(kisiSayisi);
-    }
-
-    const ortalama = toplamKisi ? (toplamPuan / toplamKisi).toFixed(10) : 0;
-    document.getElementById('ortalamaPuan').textContent = 'Ortalama Puan: ' + ortalama;
-    document.getElementById('mevcutOrtalama').textContent = ortalama;
-
-    // Grafik güncelleme
-    const ctx = document.getElementById('puanGrafik').getContext('2d');
-    if (chartInstance) {
-        chartInstance.destroy();
-    }
-    chartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: puanlar,
-            datasets: [{
-                label: 'Kişi Sayısı',
-                data: kisiSayilari,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+        for (let puan = 1; puan <= 10; puan++) {
+            const tr = document.createElement('tr');
+            const tdPuan = document.createElement('td');
+            const tdKisiSayisi = document.createElement('td');
+            const inputKisiSayisi = document.createElement('input');
+            
+            inputKisiSayisi.type = 'number';
+            inputKisiSayisi.min = 0;
+            inputKisiSayisi.value = 0;
+            inputKisiSayisi.addEventListener('input', ortalamaHesapla);
+            
+            tdPuan.textContent = puan;
+            tdKisiSayisi.appendChild(inputKisiSayisi);
+            
+            tr.appendChild(tdPuan);
+            tr.appendChild(tdKisiSayisi);
+            tbody.appendChild(tr);
         }
+
+        document.getElementById('hedefOrtalama').addEventListener('input', hedefOrtalamaHesapla);
     });
 
-    // Öneriler güncelleme
-    hedefOrtalamaHesapla();
-}
+    function ortalamaHesapla() {
+        const rows = document.getElementById('puanTablosu').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        let toplamPuan = 0;
+        let toplamKisi = 0;
+        const puanlar = [];
+        const kisiSayilari = [];
+        
+        for (let row of rows) {
+            const puan = parseInt(row.getElementsByTagName('td')[0].textContent);
+            const kisiSayisi = parseInt(row.getElementsByTagName('input')[0].value);
+            
+            toplamPuan += puan * kisiSayisi;
+            toplamKisi += kisiSayisi;
+            puanlar.push(puan);
+            kisiSayilari.push(kisiSayisi);
+        }
 
-function hedefOrtalamaHesapla() {
-    const hedefOrtalama = parseFloat(document.getElementById('hedefOrtalama').value) || 0;
-    const mevcutOrtalama = parseFloat(document.getElementById('mevcutOrtalama').textContent);
-    const rows = document.getElementById('puanTablosu').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-    let toplamPuan = 0;
-    let toplamKisi = 0;
+        const ortalama = toplamKisi ? (toplamPuan / toplamKisi).toFixed(10) : 0;
+        document.getElementById('ortalamaPuan').textContent = `Ortalama Puan: ${ortalama} (${toplamKisi} kişi)`;
+        document.getElementById('mevcutOrtalama').textContent = ortalama;
 
-    for (let row of rows) {
-        const puan = parseInt(row.getElementsByTagName('td')[0].textContent);
-        const kisiSayisi = parseInt(row.getElementsByTagName('input')[0].value);
-        toplamPuan += puan * kisiSayisi;
-        toplamKisi += kisiSayisi;
+        // Grafik güncelleme
+        const ctx = document.getElementById('puanGrafik').getContext('2d');
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+        chartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: puanlar,
+                datasets: [{
+                    label: 'Kişi Sayısı',
+                    data: kisiSayilari,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Öneriler güncelleme
+        hedefOrtalamaHesapla();
     }
 
-    const onerilerListesi = document.getElementById('onerilerListesi');
-    onerilerListesi.innerHTML = '';
+    function hedefOrtalamaHesapla() {
+        const hedefOrtalama = parseFloat(document.getElementById('hedefOrtalama').value) || 0;
+        const mevcutOrtalama = parseFloat(document.getElementById('mevcutOrtalama').textContent);
+        const rows = document.getElementById('puanTablosu').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        let toplamPuan = 0;
+        let toplamKisi = 0;
 
-    if (hedefOrtalama > mevcutOrtalama) {
-        const hedefPuanFark = hedefOrtalama - mevcutOrtalama;
-        const mevcutMaxPuan = 10; // En yüksek puan
-        const gerekliKisi = Math.ceil((toplamKisi * hedefPuanFark) / (mevcutMaxPuan - hedefOrtalama));
-        
-        if (gerekliKisi > 0) {
-            const li = document.createElement('li');
-            li.textContent = `Hedef ortalamaya ulaşmak için ${gerekliKisi} adet ${mevcutMaxPuan} puan ekleyin.`;
-            onerilerListesi.appendChild(li);
+        for (let row of rows) {
+            const puan = parseInt(row.getElementsByTagName('td')[0].textContent);
+            const kisiSayisi = parseInt(row.getElementsByTagName('input')[0].value);
+            toplamPuan += puan * kisiSayisi;
+            toplamKisi += kisiSayisi;
+        }
+
+        const onerilerListesi = document.getElementById('onerilerListesi');
+        onerilerListesi.innerHTML = '';
+
+        if (hedefOrtalama > mevcutOrtalama) {
+            const hedefPuanFark = hedefOrtalama - mevcutOrtalama;
+            const mevcutMaxPuan = 10; // En yüksek puan
+            const gerekliKisi = Math.ceil((toplamKisi * hedefPuanFark) / (mevcutMaxPuan - hedefOrtalama));
+            
+            if (gerekliKisi > 0) {
+                const li = document.createElement('li');
+                li.textContent = `Hedef ortalamaya ulaşmak için ${gerekliKisi} adet ${mevcutMaxPuan} puan ekleyin.`;
+                onerilerListesi.appendChild(li);
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'Hedef ortalamayı yakalamak için yeterli kişi sayısı bulunmuyor.';
+                onerilerListesi.appendChild(li);
+            }
+        } else if (hedefOrtalama < mevcutOrtalama) {
+            const hedefPuanFark = mevcutOrtalama - hedefOrtalama;
+            const mevcutMinPuan = 1; // En düşük puan
+            const gerekliKisi = Math.ceil((toplamKisi * hedefPuanFark) / (hedefOrtalama - mevcutMinPuan));
+            
+            if (gerekliKisi > 0) {
+                const li = document.createElement('li');
+                li.textContent = `Hedef ortalamaya düşmek için ${gerekliKisi} adet ${mevcutMinPuan} puan ekleyin.`;
+                onerilerListesi.appendChild(li);
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'Hedef ortalamayı yakalamak için yeterli kişi sayısı bulunmuyor.';
+                onerilerListesi.appendChild(li);
+            }
         } else {
             const li = document.createElement('li');
-            li.textContent = 'Hedef ortalamayı yakalamak için yeterli kişi sayısı bulunmuyor.';
+            li.textContent = 'Mevcut ortalama, hedef ortalamaya eşittir.';
             onerilerListesi.appendChild(li);
         }
-    } else if (hedefOrtalama < mevcutOrtalama) {
-        const hedefPuanFark = mevcutOrtalama - hedefOrtalama;
-        const mevcutMinPuan = 1; // En düşük puan
-        const gerekliKisi = Math.ceil((toplamKisi * hedefPuanFark) / (hedefOrtalama - mevcutMinPuan));
-        
-        if (gerekliKisi > 0) {
-            const li = document.createElement('li');
-            li.textContent = `Hedef ortalamaya düşmek için ${gerekliKisi} adet ${mevcutMinPuan} puan ekleyin.`;
-            onerilerListesi.appendChild(li);
-        } else {
-            const li = document.createElement('li');
-            li.textContent = 'Hedef ortalamayı yakalamak için yeterli kişi sayısı bulunmuyor.';
-            onerilerListesi.appendChild(li);
-        }
-    } else {
-        const li = document.createElement('li');
-        li.textContent = 'Mevcut ortalama, hedef ortalamaya eşittir.';
-        onerilerListesi.appendChild(li);
     }
-}
-
     </script>
 </body>
 </html>
